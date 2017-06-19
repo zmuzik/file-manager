@@ -7,7 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import zmuzik.filemanager.R
-import java.io.File
+import zmuzik.filemanager.model.FileWrapper
 
 open class FilesView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
                                                defStyleAttr: Int = 0) :
@@ -16,7 +16,7 @@ open class FilesView @JvmOverloads constructor(context: Context, attrs: Attribut
     val horiz = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val columns = resources.getInteger(R.integer.grid_columns)
 
-    var files: List<File> = ArrayList()
+    var files: List<FileWrapper> = ArrayList()
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -24,7 +24,7 @@ open class FilesView @JvmOverloads constructor(context: Context, attrs: Attribut
         layoutManager = if (horiz) GridLayoutManager(context, columns) else LinearLayoutManager(context)
     }
 
-    fun setData(newFiles: List<File>) {
+    fun setData(newFiles: List<FileWrapper>) {
         files = newFiles
         adapter = FileListAdapter(context, files, horiz)
     }

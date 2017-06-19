@@ -24,8 +24,8 @@ import zmuzik.filemanager.common.Keys
 import zmuzik.filemanager.common.PrefsHelper
 import zmuzik.filemanager.common.bus.*
 import zmuzik.filemanager.common.fileExt
+import zmuzik.filemanager.model.FileWrapper
 import zmuzik.filemanager.settings.SettingsActivity
-import java.io.File
 
 class MainActivity : AppCompatActivity(), ActionMode.Callback {
 
@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
 
     val prefs by lazy { PrefsHelper(PreferenceManager.getDefaultSharedPreferences(applicationContext)) }
 
-    var currentFolder = Environment.getRootDirectory()
-    var selectedFiles: List<File> = ArrayList()
+    var currentFolder = FileWrapper(Environment.getRootDirectory())
+    var selectedFiles: List<FileWrapper> = ArrayList()
     var actionMode: ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,12 +44,12 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         setSupportActionBar(toolbar)
         if (savedInstanceState != null) {
-            currentFolder = File(savedInstanceState.getString(Keys.CURRENT_FOLDER))
+            currentFolder = FileWrapper(savedInstanceState.getString(Keys.CURRENT_FOLDER))
         } else {
-            currentFolder = prefs.defaultFolder
-            if (!currentFolder.exists() || !currentFolder.isDirectory) {
+            currentFolder = FileWrapper(prefs.defaultFolder)
+            if (!currentFolder.exists || !currentFolder.isDir) {
                 Toast.makeText(applicationContext, R.string.default_dir_error, Toast.LENGTH_LONG).show()
-                currentFolder = PrefsHelper.factoryResetFolder
+                currentFolder = FileWrapper(PrefsHelper.factoryResetFolder)
             }
         }
     }
@@ -72,15 +72,15 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putString(Keys.CURRENT_FOLDER, currentFolder.absolutePath)
+        outState?.putString(Keys.CURRENT_FOLDER, currentFolder.path)
     }
 
     override fun onBackPressed() {
-        if (currentFolder.parentFile == null
-                || currentFolder == PrefsHelper.factoryResetFolder) {
+        if (currentFolder.file.parentFile == null
+                || currentFolder.file == PrefsHelper.factoryResetFolder) {
             super.onBackPressed()
         } else {
-            listDirectory(currentFolder.parentFile)
+            listDirectory(FileWrapper(currentFolder.file.parent))
         }
     }
 
@@ -105,12 +105,12 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
 
     @Subscribe fun onListDirectoryRequested(event: ListDirectoryRequestedEvent) {
         finishActionMode()
-        listDirectoryOrRequestPermission(event.file)
+        listDirectoryOrRequestPermission(event.fileWrapper)
     }
 
     @Subscribe fun onOpenFileRequested(event: OpenFileRequestedEvent) {
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt(event.file.name))
-        val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", event.file)
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt(event.fileWrapper.name))
+        val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", event.fileWrapper.file)
         val intent = Intent(Intent.ACTION_VIEW, uri)
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         intent.setDataAndType(uri, mimeType)
@@ -135,13 +135,14 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
         }
     }
 
-    fun listDirectory(dir: File) {
+    fun listDirectory(dir: FileWrapper) {
         currentFolder = dir
         title = currentFolder.name
-        if (currentFolder.canRead()) {
+        if (currentFolder.file.canRead()) {
             LoadFilesTask(currentFolder).execute()
         }
         finishActionMode()
+
     }
 
     @Subscribe fun onFilesReceived(event: FilesReceivedEvent) {
@@ -194,7 +195,7 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
         }
     }
 
-    fun listDirectoryOrRequestPermission(dir: File) {
+    fun listDirectoryOrRequestPermission(dir: FileWrapper) {
         if (isReadExternalGranted) {
             listDirectory(dir)
         } else {
@@ -238,7 +239,7 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
 
     fun deleteSelectedFiles() {
         var counter = 0
-        selectedFiles.forEach { if (it.deleteRecursively()) counter++ }
+        selectedFiles.forEach { if (it.file.deleteRecursively()) counter++ }
         selectedFiles = ArrayList()
         listDirectory(currentFolder)
         val msg = resources.getQuantityString(R.plurals.items_deleted, counter, counter)

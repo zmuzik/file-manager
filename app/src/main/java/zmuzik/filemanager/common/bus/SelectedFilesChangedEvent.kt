@@ -1,6 +1,6 @@
 package zmuzik.filemanager.common.bus
 
-import java.io.File
+import zmuzik.filemanager.model.FileWrapper
 
-class SelectedFilesChangedEvent(val selectedFiles: ArrayList<File>)
+class SelectedFilesChangedEvent(val selectedFiles: ArrayList<FileWrapper>)
 

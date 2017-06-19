@@ -15,13 +15,13 @@ import zmuzik.filemanager.common.bus.SelectedFilesChangedEvent
 import zmuzik.filemanager.common.bus.UiBus
 import zmuzik.filemanager.common.formatDate
 import zmuzik.filemanager.common.formatFileSize
-import java.io.File
+import zmuzik.filemanager.model.FileWrapper
 
 
-class FileListAdapter(val context: Context, val files: List<File>, val isGrid: Boolean) :
+class FileListAdapter(val context: Context, val files: List<FileWrapper>, val isGrid: Boolean) :
         RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
 
-    val selectedItems: ArrayList<File> = ArrayList()
+    val selectedItems: ArrayList<FileWrapper> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileListAdapter.ViewHolder {
         val itemLayoutId = if (isGrid) R.layout.file_grid_item else R.layout.file_list_item
@@ -31,21 +31,20 @@ class FileListAdapter(val context: Context, val files: List<File>, val isGrid: B
 
     override fun onBindViewHolder(holder: FileListAdapter.ViewHolder, position: Int) {
         val file = files[position]
-        val isDir = file.isDirectory
+        val isDir = file.isDir
         val iconId = when {
             (isDir && selectedItems.contains(file)) -> R.drawable.ic_folder_selected_24dp
             (isDir && !selectedItems.contains(file)) -> R.drawable.ic_folder_24dp
             (!isDir && selectedItems.contains(file)) -> R.drawable.ic_file_selected_24dp
             else -> R.drawable.ic_file_24dp
         }
-        val dirSize = if (isDir) file.list().size else 0
 
         holder.icon.setImageDrawable(ContextCompat.getDrawable(context, iconId))
         holder.fileName.text = file.name
-        holder.date.text = formatDate(file.lastModified())
+        holder.date.text = formatDate(file.lastModified)
         holder.size.text =
-                if (isDir) context.resources.getQuantityString(R.plurals.items, dirSize, dirSize)
-                else formatFileSize(file.length())
+                if (isDir) context.resources.getQuantityString(R.plurals.items, file.dirSize, file.dirSize)
+                else formatFileSize(file.fileSize)
 
         holder.itemRoot.setOnClickListener {
             if (isDir) {

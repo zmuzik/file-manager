@@ -1,5 +1,5 @@
 package zmuzik.filemanager.common.bus
 
-import java.io.File
+import zmuzik.filemanager.model.FileWrapper
 
-class ListDirectoryRequestedEvent(val file: File)
+class ListDirectoryRequestedEvent(val fileWrapper: FileWrapper)

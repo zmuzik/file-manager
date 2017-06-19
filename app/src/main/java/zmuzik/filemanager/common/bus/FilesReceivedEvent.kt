@@ -1,5 +1,5 @@
 package zmuzik.filemanager.common.bus
 
-import java.io.File
+import zmuzik.filemanager.model.FileWrapper
 
-class FilesReceivedEvent(val files: List<File>)
+class FilesReceivedEvent(val files: List<FileWrapper>)
