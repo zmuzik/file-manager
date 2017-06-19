@@ -1,5 +1,6 @@
 package zmuzik.filemanager.common
 
+import android.view.View
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,4 +25,12 @@ fun fileExt(fileName: String): String {
         (lastDot > 0) -> fileName.substring(lastDot + 1)
         else -> ""
     }
+}
+
+fun View.gone() {
+    this.visibility = View.GONE
+}
+
+fun View.visible() {
+    this.visibility = View.VISIBLE
 }

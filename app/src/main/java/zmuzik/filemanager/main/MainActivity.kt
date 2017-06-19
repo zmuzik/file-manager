@@ -20,10 +20,8 @@ import android.widget.Toast
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_main.*
 import zmuzik.filemanager.R
-import zmuzik.filemanager.common.Keys
-import zmuzik.filemanager.common.PrefsHelper
+import zmuzik.filemanager.common.*
 import zmuzik.filemanager.common.bus.*
-import zmuzik.filemanager.common.fileExt
 import zmuzik.filemanager.model.FileWrapper
 import zmuzik.filemanager.settings.SettingsActivity
 
@@ -142,13 +140,15 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
             LoadFilesTask(currentFolder).execute()
         }
         finishActionMode()
-
+        fileListView.gone()
+        progressBar.visible()
     }
 
     @Subscribe fun onFilesReceived(event: FilesReceivedEvent) {
         fileListView.setData(event.files)
+        progressBar.gone()
+        fileListView.visible()
     }
-
 
     val isReadExternalGranted: Boolean
         get() {
