@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">File Manager</string>
+    <string name="settings">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="no_app_for_ext">There\'s no app to open this file</string>
+    <string name="delete">Delete</string>
+    <string name="default_folder">Default folder</string>
+    <string name="default_dir_error">Default folder from Settings is invalid, using the original one</string>
+
+    <plurals name="items">
+        <item quantity="one">1 item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="items_selected">
+        <item quantity="one">1 item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
+    <plurals name="items_deleted">
+        <item quantity="one">1 item deleted</item>
+        <item quantity="other">%d items deleted</item>
+    </plurals>
+</resources>

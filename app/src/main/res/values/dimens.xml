@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="list_margin">4dp</dimen>
+    <dimen name="list_text_size_big">20dp</dimen>
+    <dimen name="list_text_size_small">12dp</dimen>
+    <dimen name="list_item_icon_height">48dp</dimen>
+    <dimen name="grid_item_icon_height">96dp</dimen>
+</resources>
